@@ -51,7 +51,6 @@ class TfLiteLandmarkClassifier(
     private fun initializeClassifier() {
         val baseOptions = BaseOptions.builder()
             .setNumThreads(2)
-            .useGpu()
             .build()
 
         val options = ImageClassifier.ImageClassifierOptions.builder()
@@ -64,7 +63,7 @@ class TfLiteLandmarkClassifier(
             // Create the classifier from the TfLite File
             classifier = ImageClassifier.createFromFileAndOptions(
                 context,
-                "assets/landmark_classifier.tflite",
+                "landmark_classifier.tflite",
                 options
             )
         } catch (exception: IllegalStateException) {
@@ -93,10 +92,10 @@ class TfLiteLandmarkClassifier(
      */
     private fun getOrientationFromRotation(rotation: Int): ImageProcessingOptions.Orientation {
         return when(rotation) {
-            Surface.ROTATION_0 -> ImageProcessingOptions.Orientation.RIGHT_TOP
+            Surface.ROTATION_270 -> ImageProcessingOptions.Orientation.BOTTOM_RIGHT
             Surface.ROTATION_90 -> ImageProcessingOptions.Orientation.TOP_LEFT
             Surface.ROTATION_180 -> ImageProcessingOptions.Orientation.RIGHT_BOTTOM
-            else -> ImageProcessingOptions.Orientation.BOTTOM_RIGHT
+            else -> ImageProcessingOptions.Orientation.RIGHT_TOP
         }
     }
 }

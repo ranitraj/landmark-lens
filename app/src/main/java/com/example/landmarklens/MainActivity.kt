@@ -1,11 +1,14 @@
 package com.example.landmarklens
 
+import android.content.pm.PackageManager
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.landmarklens.data.TfLiteLandmarkClassifier
 import com.example.landmarklens.domain.Classification
@@ -32,6 +36,17 @@ import com.example.landmarklens.ui.theme.LandmarkLensTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        if (!isCameraPermissionGranted()) {
+            // Request for Camera-Permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                0
+            )
+        }
+
         setContent {
             LandmarkLensTheme {
                 var classifications by remember {
@@ -70,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
+                            .align(Alignment.BottomCenter),
                     ) {
                         classifications.forEach {
                             Text(
@@ -84,10 +99,28 @@ class MainActivity : ComponentActivity() {
                                 color = MaterialTheme.colorScheme.primary
                             )
 
+                            Text(
+                                text = it.confidenceScore.toString(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                                    .padding(8.dp),
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
                         }
                     }
                 }
             }
         }
     }
+
+
+    /**
+     * Requesting Camera Permission
+     */
+    private fun isCameraPermissionGranted() = ContextCompat.checkSelfPermission(
+        this, Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
 }
